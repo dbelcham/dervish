@@ -8,8 +8,10 @@ namespace dervish
     {
         private readonly CircuitBreakerOptions _options;
         private CircuitState _circuitState;
-        private DateTime? _circuitCloseTime;
-        
+        private DateTime? _circuitOpenTime;
+
+        public event EventHandler<Exception> QuietException; 
+
         public CircuitBreaker(CircuitBreakerOptions options)
         {
             _options = options;
@@ -20,9 +22,9 @@ namespace dervish
         {
             if (_circuitState == CircuitState.Open) throw new CircuitOpenException();
 
-            if (_circuitState == CircuitState.Closed && _circuitCloseTime.HasValue)
+            if (_circuitState == CircuitState.Closed && _circuitOpenTime.HasValue)
             {
-                if (DateTime.Now.Subtract(_circuitCloseTime.Value).Seconds < _options.PauseWhenBreakerOpen)
+                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < _options.PauseWhenBreakerOpen)
                 {
                     _circuitState = CircuitState.PartiallyOpen;
                 }
@@ -33,7 +35,7 @@ namespace dervish
                 try
                 {
                     var returnValue = functionToRun.Invoke();
-                    _circuitCloseTime = null;
+                    _circuitOpenTime = null;
                     _circuitState = CircuitState.Closed;
 
                     return returnValue;
@@ -55,21 +57,30 @@ namespace dervish
                 catch (Exception ex)
                 {
                     exceptions.Add(ex);
+                    RaiseQuietException(ex);
                     Thread.Sleep(_options.PauseBetweenCalls);
                 }
             }
-            _circuitCloseTime = DateTime.Now;
+            _circuitOpenTime = DateTime.Now;
             _circuitState = CircuitState.Open;
             throw new CircuitBreakerAggregateException(exceptions);        
+        }
+
+        private void RaiseQuietException(Exception exception)
+        {
+            if (QuietException != null)
+            {
+                QuietException(this, exception);
+            }
         }
 
         public void Execute(Action methodToRun)
         {
             if (_circuitState == CircuitState.Open) throw new CircuitOpenException();
 
-            if (_circuitState == CircuitState.Closed && _circuitCloseTime.HasValue)
+            if (_circuitState == CircuitState.Closed && _circuitOpenTime.HasValue)
             {
-                if (DateTime.Now.Subtract(_circuitCloseTime.Value).Seconds < _options.PauseWhenBreakerOpen)
+                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < _options.PauseWhenBreakerOpen)
                 {
                     _circuitState = CircuitState.PartiallyOpen;
                 }
@@ -80,7 +91,7 @@ namespace dervish
                 try
                 {
                     methodToRun.Invoke();
-                    _circuitCloseTime = null;
+                    _circuitOpenTime = null;
                     _circuitState = CircuitState.Closed;
                     return;
                 }
@@ -97,16 +108,18 @@ namespace dervish
                 try
                 {
                     methodToRun.Invoke();
+                    return;
                 }
                 catch (Exception ex)
                 {
                     exceptions.Add(ex);
+                    RaiseQuietException(ex);
                     Thread.Sleep(_options.PauseBetweenCalls);
                 }
             }
-            _circuitCloseTime = DateTime.Now;
+            _circuitOpenTime = DateTime.Now;
             _circuitState = CircuitState.Open;
-            throw new CircuitBreakerAggregateException(exceptions);        
+            throw new CircuitBreakerAggregateException(exceptions);                    
         }
 
         private enum CircuitState
