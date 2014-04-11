@@ -66,21 +66,48 @@ namespace dervish.Tests
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("When calling a dependency through the circuit breaker")]
-        public virtual void WhenCallingADependencyThroughTheCircuitBreaker()
+        [NUnit.Framework.DescriptionAttribute("When calling a broken dependency through the circuit breaker")]
+        public virtual void WhenCallingABrokenDependencyThroughTheCircuitBreaker()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When calling a dependency through the circuit breaker", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When calling a broken dependency through the circuit breaker", ((string[])(null)));
 #line 7
 this.ScenarioSetup(scenarioInfo);
 #line 8
  testRunner.Given("that the dependency call hits the retry threshold", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.And("that the dependency returns void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("that the dependency returns void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
- testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And("that the dependency is broken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 11
+ testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 12
  testRunner.Then("the circuit breaker should retry the call the maximum permitted number of retries" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("When calling an itermittently working dependency through the circuit breaker")]
+        public virtual void WhenCallingAnItermittentlyWorkingDependencyThroughTheCircuitBreaker()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When calling an itermittently working dependency through the circuit breaker", ((string[])(null)));
+#line 14
+this.ScenarioSetup(scenarioInfo);
+#line 15
+ testRunner.Given("that the dependency call succeeds after some failures", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 16
+  testRunner.And("that the dependency returns void", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 17
+  testRunner.And("that the dependency is intermittently broken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 18
+ testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 19
+ testRunner.Then("the circuit breaker should retry the call until it gets a successful interaction", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 20
+  testRunner.And("the number of silent errors should be greater than zero", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
+  testRunner.But("the number of silent errors should not equal the maximum number of retries", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "But ");
 #line hidden
             this.ScenarioCleanup();
         }
