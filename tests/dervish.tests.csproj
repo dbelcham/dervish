@@ -57,6 +57,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CircuitBreakerActionExceptionThrowing.feature</DependentUpon>
     </Compile>
+    <Compile Include="CircuitBreakerFuncExceptionThrowing.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CircuitBreakerFuncExceptionThrowing.feature</DependentUpon>
+    </Compile>
     <Compile Include="CircuitBreakerFuncRetries.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -74,6 +79,10 @@
     <None Include="CircuitBreakerActionExceptionThrowing.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CircuitBreakerActionExceptionThrowing.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CircuitBreakerFuncExceptionThrowing.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CircuitBreakerFuncExceptionThrowing.feature.cs</LastGenOutput>
     </None>
     <None Include="CircuitBreakerFuncRetries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

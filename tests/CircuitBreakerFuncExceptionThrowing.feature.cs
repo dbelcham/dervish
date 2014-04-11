@@ -19,21 +19,20 @@ namespace dervish.Tests
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "1.9.0.77")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("CircuitBreakerFuncRetries")]
-    public partial class CircuitBreakerFuncRetriesFeature
+    [NUnit.Framework.DescriptionAttribute("CircuitBreakerFuncExceptionThrowing")]
+    public partial class CircuitBreakerFuncExceptionThrowingFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
-#line 1 "CircuitBreakerFuncRetries.feature"
+#line 1 "CircuitBreakerFuncExceptionThrowing.feature"
 #line hidden
         
         [NUnit.Framework.TestFixtureSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CircuitBreakerFuncRetries", "In order to retry failures on Func methods\r\nAs a developer\r\nI want the Circuit Br" +
-                    "eaker to loop over the dependency call", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "CircuitBreakerFuncExceptionThrowing", "In order to convey errors\nAs a developer\nI want to have exceptions raised", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -81,33 +80,32 @@ this.ScenarioSetup(scenarioInfo);
 #line 10
  testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 11
- testRunner.Then("the circuit breaker should retry the call the maximum permitted number of retries" +
-                    "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("an aggregate exception should be raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 12
+  testRunner.And("the aggregate exception should contain the same number of exceptions as retries", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("When calling an itermittently working dependency through the circuit breaker")]
-        public virtual void WhenCallingAnItermittentlyWorkingDependencyThroughTheCircuitBreaker()
+        [NUnit.Framework.DescriptionAttribute("When calling an intermittently working dependency through the circuit breaker")]
+        public virtual void WhenCallingAnIntermittentlyWorkingDependencyThroughTheCircuitBreaker()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When calling an itermittently working dependency through the circuit breaker", ((string[])(null)));
-#line 13
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When calling an intermittently working dependency through the circuit breaker", ((string[])(null)));
 #line 14
- testRunner.Given("that the dependency call succeeds after some failures", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 15
-  testRunner.And("that the dependency is a func", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("that the dependency call succeeds after some failures", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 16
-  testRunner.And("that the dependency is intermittently broken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("that the dependency is a func", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 17
- testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And("that the dependency is intermittently broken", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 18
- testRunner.Then("the circuit breaker should retry the call until it gets a successful interaction", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I attempt to call the dependency", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 19
-  testRunner.And("the number of silent errors should be greater than zero", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("the dependency call should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 20
-  testRunner.And("the number of silent errors should be less than the maximum number of retries", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("there should be quiet exceptions equalling the number of failures before success", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

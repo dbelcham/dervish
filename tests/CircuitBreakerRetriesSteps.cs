@@ -33,7 +33,7 @@ namespace dervish.Tests
             _actionDependency = CallIntermittentlyBrokenAction;
         }
 
-        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerFuncRetries"), Scope(Feature = "CircuitBreakerFuncExceptionThrowing")]
         public void GivenThatTheFuncDependencyIsIntermittentlyBroken()
         {
             _funcDependency = CallIntermittentlyBrokenFunc;
@@ -110,26 +110,27 @@ namespace dervish.Tests
             Assert.That(_quietExceptionCount, Is.LessThan(MaxRetries));
         }
 
-        [Given(@"that the dependency is a func"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        [Given(@"that the dependency is a func"), Scope(Feature = "CircuitBreakerFuncRetries"), Scope(Feature = "CircuitBreakerFuncExceptionThrowing")]
         public void GivenThatTheDependencyIsAFunc()
         {
         }
 
-        [Given(@"that the dependency is broken"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        [Given(@"that the dependency is broken"), Scope(Feature = "CircuitBreakerFuncRetries"), Scope(Feature = "CircuitBreakerFuncExceptionThrowing")]
         public void GivenThatTheFuncDependencyIsBroken()
         {
             _funcDependency = CallBrokenFunc;
         }
 
-        [When(@"I attempt to call the dependency"), Scope(Feature="CircuitBreakerFuncRetries")]
+        [When(@"I attempt to call the dependency"), Scope(Feature="CircuitBreakerFuncRetries"), Scope(Feature = "CircuitBreakerFuncExceptionThrowing")]
         public void WhenIAttemptToCallTheFuncDependency()
         {
             try
             {
                 var result = _circuitBreaker.Execute(_funcDependency);
             }
-            catch (Exception)
+            catch (CircuitBreakerAggregateException ex)
             {
+                _aggregateException = ex;
                 _errorOccurred = true;
             }
         }
