@@ -14,19 +14,20 @@ namespace dervish.Tests
         private bool _errorOccurred;
         private int _quietExceptionCount;
         private Func<bool> _funcDependency ;
+        private CircuitBreakerAggregateException _aggregateException;
 
-        [Given(@"that the dependency returns void"), Scope(Feature = "CircuitBreakerActionRetries")]
+        [Given(@"that the dependency returns void"), Scope(Feature = "CircuitBreakerActionRetries"), Scope(Feature="CircuitBreakerActionExceptionThrowing")]
         public void GivenThatTheDependencyReturnsVoid()
         {
         }
 
-        [Given(@"that the dependency is broken"), Scope(Feature="CircuitBreakerActionRetries")]
+        [Given(@"that the dependency is broken"), Scope(Feature="CircuitBreakerActionRetries"), Scope(Feature="CircuitBreakerActionExceptionThrowing")]
         public void GivenThatTheDependencyIsBroken()
         {
             _actionDependency = CallBrokenAction;
         }
 
-        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerActionRetries")]
+        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerActionRetries"), Scope(Feature = "CircuitBreakerActionExceptionThrowing")]
         public void GivenThatTheDependencyIsIntermittentlyBroken()
         {
             _actionDependency = CallIntermittentlyBrokenAction;
@@ -44,16 +45,17 @@ namespace dervish.Tests
             _circuitBreaker = new CircuitBreaker(new CircuitBreakerOptions(5, 5, MaxRetries));
         }
 
-        [When(@"I attempt to call the dependency"), Scope(Feature = "CircuitBreakerActionRetries")]
+        [When(@"I attempt to call the dependency"), Scope(Feature = "CircuitBreakerActionRetries"), Scope(Feature = "CircuitBreakerActionExceptionThrowing")]
         public void WhenIAttemptToCallTheDependency()
         {
             try
             {
                 _circuitBreaker.Execute(_actionDependency);
             }
-            catch (Exception)
+            catch (CircuitBreakerAggregateException ex)
             {
                 _errorOccurred = true;
+                _aggregateException = ex;
             }
         }
 
@@ -131,7 +133,31 @@ namespace dervish.Tests
                 _errorOccurred = true;
             }
         }
-        
+
+        [Then(@"an aggregate exception should be raised")]
+        public void ThenAnAggregateExceptionShouldBeRaised()
+        {
+            Assert.That(_aggregateException, Is.Not.Null);
+        }
+
+        [Then(@"the aggregate exception should contain the same number of exceptions as retries")]
+        public void ThenTheAggregateExceptionShouldContainTheSameNumberOfExceptionsAsRetries()
+        {
+            Assert.That(_aggregateException.InnerExceptions.Count, Is.EqualTo(MaxRetries));
+        }
+
+        [Then(@"the dependency call should succeed")]
+        public void ThenTheDependencyCallShouldSucceed()
+        {
+            Assert.That(_aggregateException, Is.Null);
+        }
+
+        [Then(@"there should be quiet exceptions equalling the number of failures before success")]
+        public void ThenThereShouldBeQuietExceptionsEquallingTheNumberOfFailuresBeforeSuccess()
+        {
+            Assert.That(_quietExceptionCount, Is.EqualTo(MaxRetries-1));
+        }
+
         public bool CallBrokenFunc()
         {
             _count++;
