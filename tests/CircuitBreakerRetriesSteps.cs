@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 
@@ -8,42 +7,49 @@ namespace dervish.Tests
     [Binding]
     public class CircuitBreakerRetriesSteps
     {
-        private CircuitBreaker _circuitBreaker;
-        private int _count = 0;
-        private Action _dependency;
-        private bool _errorOccurred;
-        private int _quietExceptionCount = 0;
         private const int MaxRetries = 5;
+        private CircuitBreaker _circuitBreaker;
+        private int _count;
+        private Action _actionDependency;
+        private bool _errorOccurred;
+        private int _quietExceptionCount;
+        private Func<bool> _funcDependency ;
 
-        [Given(@"that the dependency returns void")]
+        [Given(@"that the dependency returns void"), Scope(Feature = "CircuitBreakerActionRetries")]
         public void GivenThatTheDependencyReturnsVoid()
         {
         }
 
-        [Given(@"that the dependency is broken")]
+        [Given(@"that the dependency is broken"), Scope(Feature="CircuitBreakerActionRetries")]
         public void GivenThatTheDependencyIsBroken()
         {
-            _dependency = CallBrokenDependency;
+            _actionDependency = CallBrokenAction;
         }
 
-        [Given(@"that the dependency is intermittently broken")]
+        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerActionRetries")]
         public void GivenThatTheDependencyIsIntermittentlyBroken()
         {
-            _dependency = CallIntermittentlyBrokenDependency;
+            _actionDependency = CallIntermittentlyBrokenAction;
         }
 
+        [Given(@"that the dependency is intermittently broken"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        public void GivenThatTheFuncDependencyIsIntermittentlyBroken()
+        {
+            _funcDependency = CallIntermittentlyBrokenFunc;
+        }
+        
         [Given(@"that the dependency call hits the retry threshold")]
         public void GivenThatTheDependencyCallHitsTheRetryThreshold()
         {
-            _circuitBreaker = new CircuitBreaker(new CircuitBreakerOptions(5,5,MaxRetries));
+            _circuitBreaker = new CircuitBreaker(new CircuitBreakerOptions(5, 5, MaxRetries));
         }
 
-        [When(@"I attempt to call the dependency")]
+        [When(@"I attempt to call the dependency"), Scope(Feature = "CircuitBreakerActionRetries")]
         public void WhenIAttemptToCallTheDependency()
         {
             try
             {
-                _circuitBreaker.Execute(_dependency);
+                _circuitBreaker.Execute(_actionDependency);
             }
             catch (Exception)
             {
@@ -51,13 +57,13 @@ namespace dervish.Tests
             }
         }
 
-        private void CallBrokenDependency()
+        private void CallBrokenAction()
         {
             _count++;
             throw new Exception("dependency error");
         }
 
-        private void CallIntermittentlyBrokenDependency()
+        private void CallIntermittentlyBrokenAction()
         {
             _count++;
             if (_count != MaxRetries)
@@ -96,10 +102,51 @@ namespace dervish.Tests
             Assert.That(_quietExceptionCount, Is.GreaterThan(0));
         }
 
-        [Then(@"the number of silent errors should not equal the maximum number of retries")]
-        public void ThenTheNumberOfSilentErrorsShouldNotEqualTheMaximumNumberOfRetries()
+        [Then(@"the number of silent errors should be less than the maximum number of retries")]
+        public void ThenTheNumberOfSilentErrorsShouldBeLessThanTheMaximumNumberOfRetries()
         {
             Assert.That(_quietExceptionCount, Is.LessThan(MaxRetries));
+        }
+
+        [Given(@"that the dependency is a func"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        public void GivenThatTheDependencyIsAFunc()
+        {
+        }
+
+        [Given(@"that the dependency is broken"), Scope(Feature = "CircuitBreakerFuncRetries")]
+        public void GivenThatTheFuncDependencyIsBroken()
+        {
+            _funcDependency = CallBrokenFunc;
+        }
+
+        [When(@"I attempt to call the dependency"), Scope(Feature="CircuitBreakerFuncRetries")]
+        public void WhenIAttemptToCallTheFuncDependency()
+        {
+            try
+            {
+                var result = _circuitBreaker.Execute(_funcDependency);
+            }
+            catch (Exception)
+            {
+                _errorOccurred = true;
+            }
+        }
+        
+        public bool CallBrokenFunc()
+        {
+            _count++;
+            throw new Exception("broken dependency");
+        }
+
+
+        private bool CallIntermittentlyBrokenFunc()
+        {
+            _count++;
+            if (_count < MaxRetries)
+            {
+                throw new Exception("broken dependency");
+            }
+            return true;
         }
 
     }

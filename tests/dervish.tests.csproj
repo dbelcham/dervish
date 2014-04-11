@@ -47,19 +47,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircuitBreaker.feature.cs">
+    <Compile Include="CircuitBreakerActionRetries.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CircuitBreaker.feature</DependentUpon>
+      <DependentUpon>CircuitBreakerActionRetries.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CircuitBreakerFuncRetries.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CircuitBreakerFuncRetries.feature</DependentUpon>
     </Compile>
     <Compile Include="CircuitBreakerRetriesSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="CircuitBreaker.feature">
+    <None Include="CircuitBreakerActionRetries.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>CircuitBreaker.feature.cs</LastGenOutput>
+      <LastGenOutput>CircuitBreakerActionRetries.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CircuitBreakerFuncRetries.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CircuitBreakerFuncRetries.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
