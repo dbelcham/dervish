@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicLoopBreaker.cs" />
+    <Compile Include="ConsecutiveFailureBreaker.cs" />
     <Compile Include="CircuitBreaker.cs" />
     <Compile Include="CircuitBreakerAggregateException.cs" />
     <Compile Include="CircuitBreakerOptions.cs" />

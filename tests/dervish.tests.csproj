@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicLoopBreaker.cs" />
-    <Compile Include="BasicLoopBreakerTests.cs" />
+    <Compile Include="ConsecutiveFailureBreakerTests.cs" />
     <Compile Include="LoopingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

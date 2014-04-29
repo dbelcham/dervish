@@ -2,13 +2,13 @@ using System;
 
 namespace dervish
 {
-    public class BasicLoopBreaker : CircuitBreakerOptions
+    public class ConsecutiveFailureBreaker : CircuitBreakerOptions
     {
         private int _currentAttemptCount;
         private DateTime? _circuitOpenTime;
         public CircuitBreaker.CircuitState CircuitState { get; private set; }
 
-        public BasicLoopBreaker(int pauseBetweenCalls, int pauseWhenBreakerOpens, int numberOfRetries)
+        public ConsecutiveFailureBreaker(int pauseBetweenCalls, int pauseWhenBreakerOpens, int numberOfRetries)
             :base(pauseBetweenCalls, pauseWhenBreakerOpens, numberOfRetries)
         {
             _currentAttemptCount = 0;

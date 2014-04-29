@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace dervish.Tests
 {
-    public class BasicLoopBreakerTests
+    public class ConsecutiveFailureBreakerTests
     {
         [TestFixture]
         public class When_initially_created
@@ -90,7 +90,5 @@ namespace dervish.Tests
                 throw new NotImplementedException();
             }
         }
-
-
     }
 }
