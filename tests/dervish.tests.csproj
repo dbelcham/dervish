@@ -45,8 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicLoopBreaker.cs" />
     <Compile Include="ConsecutiveFailureBreakerTests.cs" />
+    <Compile Include="FailureRateByCountBreakerTests.cs" />
     <Compile Include="LoopingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

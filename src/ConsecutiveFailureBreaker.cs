@@ -31,6 +31,11 @@ namespace dervish
             return CircuitState == CircuitBreaker.CircuitState.Closed;
         }
 
+        public override void FailureOccurred()
+        {
+            
+        }
+
         public override bool TryAgain()
         {
             return _currentAttemptCount <= NumberOfRetries;

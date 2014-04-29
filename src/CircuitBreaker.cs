@@ -42,7 +42,7 @@ namespace dervish
                     {
                         throw new CircuitOpenException();
                     }
-
+                    _options.FailureOccurred();
                     exceptions.Add(ex);
                     Thread.Sleep(_options.PauseBetweenCalls);
                 }
@@ -79,6 +79,7 @@ namespace dervish
                 }
                 catch (Exception ex)
                 {
+                    _options.FailureOccurred();
                     RaiseQuietException(ex);
                     if (_options.IsPartiallyOpen())
                     {

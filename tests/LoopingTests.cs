@@ -21,7 +21,7 @@ namespace dervish.Tests
             public void a_failing_dependency_should_loop_the_maximum_number_of_times()
             {
                 const int maxTries = 5;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10,10,maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10,10,maxTries));
 
                 circuitBreaker.Execute(TestAction);
 
@@ -32,7 +32,7 @@ namespace dervish.Tests
             public void an_open_circuit_should_not_attempt_to_call_the_dependency()
             {
                 const int maxTries = 5;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10, 10, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, 10, maxTries));
 
                 try
                 {
@@ -55,7 +55,7 @@ namespace dervish.Tests
             {
                 const int maxTries = 5;
                 const int pausePeriod = 100;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10, pausePeriod, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, pausePeriod, maxTries));
 
                 try
                 {
@@ -96,7 +96,7 @@ namespace dervish.Tests
             public void a_failing_dependency_should_loop_the_maximum_number_of_times()
             {
                 const int maxTries = 5;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10, 10, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, 10, maxTries));
 
                 circuitBreaker.Execute<bool>(TestAction);
 
@@ -108,7 +108,7 @@ namespace dervish.Tests
             public void an_open_circuit_should_not_attempt_to_call_the_dependency()
             {
                 const int maxTries = 5;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10, 10, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, 10, maxTries));
 
                 try
                 {
@@ -132,7 +132,7 @@ namespace dervish.Tests
             {
                 const int maxTries = 5;
                 const int pausePeriod = 5;
-                var circuitBreaker = new CircuitBreaker(new BasicLoopBreaker(10, pausePeriod, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, pausePeriod, maxTries));
 
                 try
                 {
