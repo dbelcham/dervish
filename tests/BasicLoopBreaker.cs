@@ -2,13 +2,13 @@ using System;
 
 namespace dervish.Tests
 {
-    public class BasicLoopBreakerOptions : CircuitBreakerOptions
+    public class BasicLoopBreaker : CircuitBreakerOptions
     {
         private int _currentAttemptCount;
         private DateTime? _circuitOpenTime;
         public CircuitBreaker.CircuitState CircuitState { get; private set; }
 
-        public BasicLoopBreakerOptions(int pauseBetweenCalls, int pauseWhenBreakerOpens, int numberOfRetries)
+        public BasicLoopBreaker(int pauseBetweenCalls, int pauseWhenBreakerOpens, int numberOfRetries)
             :base(pauseBetweenCalls, pauseWhenBreakerOpens, numberOfRetries)
         {
             _currentAttemptCount = 0;
@@ -45,7 +45,7 @@ namespace dervish.Tests
         {
             if (CircuitState == CircuitBreaker.CircuitState.Open && _circuitOpenTime.HasValue)
             {
-                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < PauseWhenBreakerOpen)
+                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds >= PauseWhenBreakerOpen)
                 {
                     CircuitState = CircuitBreaker.CircuitState.PartiallyOpen;
                 }
