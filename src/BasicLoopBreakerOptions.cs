@@ -1,6 +1,6 @@
 using System;
 
-namespace dervish.Tests
+namespace dervish
 {
     public class BasicLoopBreakerOptions : CircuitBreakerOptions
     {
