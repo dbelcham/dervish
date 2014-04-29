@@ -20,49 +20,36 @@ namespace dervish
 
         public T Execute<T>(Func<T> functionToRun)
         {
-            if (_circuitState == CircuitState.Open) throw new CircuitOpenException();
+            if (_options.IsOpen()) throw new CircuitOpenException();
 
-            if (_circuitState == CircuitState.Closed && _circuitOpenTime.HasValue)
-            {
-                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < _options.PauseWhenBreakerOpen)
-                {
-                    _circuitState = CircuitState.PartiallyOpen;
-                }
-            }
-
-            if (_circuitState == CircuitState.PartiallyOpen)
-            {
-                try
-                {
-                    var returnValue = functionToRun.Invoke();
-                    _circuitOpenTime = null;
-                    _circuitState = CircuitState.Closed;
-
-                    return returnValue;
-                }
-                catch (Exception ex)
-                {
-                    throw new CircuitPartiallyOpenException();
-                }
-            }
-
+            _options.SetPartiallyOpen();
+            
             var exceptions = new List<Exception>();
 
-            for (var i = 0; i < _options.NumberOfRetries; i++)
+            do
             {
+                _options.Trying();
                 try
                 {
-                    return functionToRun.Invoke();
+                    var result = functionToRun.Invoke();
+                    _options.SetClosed();
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                    exceptions.Add(ex);
                     RaiseQuietException(ex);
+                    if (_options.IsPartiallyOpen())
+                    {
+                        throw new CircuitOpenException();
+                    }
+
+                    exceptions.Add(ex);
                     Thread.Sleep(_options.PauseBetweenCalls);
                 }
-            }
-            _circuitOpenTime = DateTime.Now;
-            _circuitState = CircuitState.Open;
+            } while (_options.TryAgain());
+
+            _options.SetOpen();
+
             throw new CircuitBreakerAggregateException(exceptions);        
         }
 
@@ -76,53 +63,39 @@ namespace dervish
 
         public void Execute(Action methodToRun)
         {
-            if (_circuitState == CircuitState.Open) throw new CircuitOpenException();
+            if (_options.IsOpen()) throw new CircuitOpenException();
 
-            if (_circuitState == CircuitState.Closed && _circuitOpenTime.HasValue)
-            {
-                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < _options.PauseWhenBreakerOpen)
-                {
-                    _circuitState = CircuitState.PartiallyOpen;
-                }
-            }
-
-            if (_circuitState == CircuitState.PartiallyOpen)
-            {
-                try
-                {
-                    methodToRun.Invoke();
-                    _circuitOpenTime = null;
-                    _circuitState = CircuitState.Closed;
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    throw new CircuitPartiallyOpenException();
-                }
-            }
+            _options.SetPartiallyOpen();
 
             var exceptions = new List<Exception>();
 
-            for (var i = 0; i < _options.NumberOfRetries; i++)
+            do
             {
+                _options.Trying();
                 try
                 {
                     methodToRun.Invoke();
-                    return;
+                    _options.SetClosed();
                 }
                 catch (Exception ex)
                 {
-                    exceptions.Add(ex);
                     RaiseQuietException(ex);
+                    if (_options.IsPartiallyOpen())
+                    {
+                        throw new CircuitOpenException();
+                    }
+
+                    exceptions.Add(ex);
                     Thread.Sleep(_options.PauseBetweenCalls);
                 }
-            }
-            _circuitOpenTime = DateTime.Now;
-            _circuitState = CircuitState.Open;
-            throw new CircuitBreakerAggregateException(exceptions);                    
+            } while (_options.TryAgain());
+
+            _options.SetOpen();
+
+            throw new CircuitBreakerAggregateException(exceptions);
         }
 
-        private enum CircuitState
+        public enum CircuitState
         {
             Open,
             Closed,
