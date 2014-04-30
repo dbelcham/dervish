@@ -96,7 +96,7 @@ namespace dervish.Tests
             public void a_failing_dependency_should_loop_the_maximum_number_of_times()
             {
                 const int maxTries = 5;
-                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, 10, maxTries));
+                var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, 1, maxTries));
 
                 circuitBreaker.Execute<bool>(TestAction);
 
@@ -131,7 +131,7 @@ namespace dervish.Tests
             public void an_open_circuit_should_attempt_one_call_after_the_pause_period_has_passed()
             {
                 const int maxTries = 5;
-                const int pausePeriod = 5;
+                const int pausePeriod = 1;
                 var circuitBreaker = new CircuitBreaker(new ConsecutiveFailureBreaker(10, pausePeriod, maxTries));
 
                 try

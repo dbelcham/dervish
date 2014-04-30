@@ -63,10 +63,10 @@ namespace dervish
 
         public void Execute(Action methodToRun)
         {
-            if (_options.IsOpen()) throw new CircuitOpenException();
-
             _options.SetPartiallyOpen();
 
+            if (_options.IsOpen()) throw new CircuitOpenException();
+            
             var exceptions = new List<Exception>();
 
             do
@@ -76,6 +76,7 @@ namespace dervish
                 {
                     methodToRun.Invoke();
                     _options.SetClosed();
+                    return;
                 }
                 catch (Exception ex)
                 {

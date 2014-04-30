@@ -50,7 +50,7 @@ namespace dervish
         {
             if (CircuitState == CircuitBreaker.CircuitState.Open && _circuitOpenTime.HasValue)
             {
-                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds < PauseWhenBreakerOpen)
+                if (DateTime.Now.Subtract(_circuitOpenTime.Value).Seconds >= PauseWhenBreakerOpen)
                 {
                     CircuitState = CircuitBreaker.CircuitState.PartiallyOpen;
                 }
