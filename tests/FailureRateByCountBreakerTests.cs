@@ -95,5 +95,47 @@ namespace dervish.Tests
                 throw new NotImplementedException();
             }
         }
+
+        [TestFixture]
+        public class When_a_list_of_successes_is_followed_by_failures
+        {
+            private int _counter;
+
+            [Test]
+            public void the_breaker_should_not_be_opened_until_enough_failures_have_occured()
+            {
+                _counter = 0;
+                var breaker = new FailureRateByCountBreaker(10,2,10,50);
+                var circuitBreaker = new CircuitBreaker(breaker);
+
+                for (var i = 0; i < 10; i++)
+                {
+                    circuitBreaker.Execute(SomeSuccessfulCall);
+                }
+
+                try
+                {
+                    circuitBreaker.Execute(SomeFailingCall);
+                }
+                catch (Exception)
+                {
+                    //swallow
+                }
+
+                Assert.That(breaker.CircuitState, Is.EqualTo(CircuitBreaker.CircuitState.Open));
+                Assert.That(_counter, Is.EqualTo(5));
+            }
+
+            private void SomeFailingCall()
+            {
+                _counter++;
+                throw new NotImplementedException();
+            }
+
+            private void SomeSuccessfulCall()
+            {
+                //success is empty
+            }
+        }
     }
 }

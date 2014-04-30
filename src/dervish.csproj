@@ -47,6 +47,7 @@
     <Compile Include="CircuitOpenException.cs" />
     <Compile Include="CircuitPartiallyOpenException.cs" />
     <Compile Include="FailureRateByCountBreaker.cs" />
+    <Compile Include="FailureRateOverTimeBreaker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

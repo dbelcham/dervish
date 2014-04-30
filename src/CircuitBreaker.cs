@@ -7,15 +7,11 @@ namespace dervish
     public class CircuitBreaker
     {
         private readonly CircuitBreakerOptions _options;
-        private CircuitState _circuitState;
-        private DateTime? _circuitOpenTime;
-
         public event EventHandler<Exception> QuietException; 
 
         public CircuitBreaker(CircuitBreakerOptions options)
         {
             _options = options;
-            _circuitState = CircuitState.Closed;
         }
 
         public T Execute<T>(Func<T> functionToRun)

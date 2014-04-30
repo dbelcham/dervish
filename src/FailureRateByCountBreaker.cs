@@ -9,7 +9,6 @@ namespace dervish
         private readonly int _lastXRequests;
         private readonly double _thresholdPercentage;
         private IList<Call> _previousCalls;
-        private DateTime? _circuitOpenTime;
 
         public FailureRateByCountBreaker(int pauseBetweenCalls, int pauseWhenBreakerOpen, 
                                          int lastXRequests, double thresholdPercentage)
@@ -18,7 +17,6 @@ namespace dervish
             _lastXRequests = lastXRequests;
             _thresholdPercentage = thresholdPercentage;
             _previousCalls = new List<Call>();
-            _circuitOpenTime = null;
         }
 
         public override bool TryAgain()
@@ -31,17 +29,6 @@ namespace dervish
             //do nothing
         }
 
-        public override void SetPartiallyOpen()
-        {
-            if (CircuitState == CircuitBreaker.CircuitState.Open && _circuitOpenTime.HasValue)
-            {
-                if (DateTime.Now.Subtract(_circuitOpenTime.Value).TotalSeconds >= PauseWhenBreakerOpen)
-                {
-                    CircuitState = CircuitBreaker.CircuitState.PartiallyOpen;
-                }
-            }   
-        }
-
         private double GetFailurePercentage()
         {
             if (_previousCalls.Count() < _lastXRequests) return 0;
@@ -52,14 +39,14 @@ namespace dervish
         {
             _previousCalls = new List<Call>();
             CircuitState = CircuitBreaker.CircuitState.Open;
-            _circuitOpenTime = DateTime.Now;
+            CircuitOpenTime = DateTime.Now;
         }
 
         public override void SetClosed()
         {
             AddCall(Call.Success);
             CircuitState = CircuitBreaker.CircuitState.Closed;
-            _circuitOpenTime = null;
+            CircuitOpenTime = null;
         }
 
         public override void FailureOccurred()
