@@ -60,9 +60,9 @@ namespace dervish
 
         private void AddCall(Call call)
         {
-            List<CallLog> outOfScopeCalls =
+            var outOfScopeCalls =
                 _callBuffer.Where(x => x.CallTime.Subtract(DateTime.Now) > _bufferDuration).ToList();
-            foreach (CallLog outOfScopeCall in outOfScopeCalls)
+            foreach (var outOfScopeCall in outOfScopeCalls)
             {
                 _callBuffer.Remove(outOfScopeCall);
             }
