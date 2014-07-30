@@ -7,7 +7,7 @@ namespace dervish
     public class CircuitBreaker
     {
         private readonly CircuitBreakerOptions _options;
-        public event EventHandler<Exception> QuietException; 
+        public event EventHandler<QuietExceptionEventArgs> QuietException; 
 
         public CircuitBreaker(CircuitBreakerOptions options)
         {
@@ -53,7 +53,7 @@ namespace dervish
         {
             if (QuietException != null)
             {
-                QuietException(this, exception);
+                QuietException(this, new QuietExceptionEventArgs(exception));
             }
         }
 
